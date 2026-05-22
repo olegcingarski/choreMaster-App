@@ -119,15 +119,25 @@ function completeChoreDAO(id) {
     
 }
 
-function listChoreDAO() {
+function listChoreDAO(categoryId) {
+    if (categoryIdFinder(categoryId) === false) {
+        return "Error: Category does not exist."
+    }
     let list = fs.readdirSync(thisPath)
     if (list.length === 0) {
         return "No Chores found."
     }
     let array = []
     list.map((item) => {
-        array.push(JSON.parse(fs.readFileSync(`${thisPath}/${item}`, "utf8")))
+        let jsonItem = JSON.parse(fs.readFileSync(`${thisPath}/${item}`, "utf8"))
+        if (jsonItem.completionStatus === false && jsonItem.categoryId === categoryId) {
+            array.push(jsonItem)
+
+        }
     });
+    if (array.length < 1) {
+        return "No active Chores in this Category."
+    }
     return array
 }
 
