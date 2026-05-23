@@ -19,7 +19,9 @@ function getChoreDAO(id) {
 function postChoreDAO (title, categoryId, desc, urgencyStatus, urgencyDate) {
     let newChore = {}
     if (!categoryIdFinder(categoryId)) {
-        return ("Category does not exist")
+        let error = new Error("Category does not exist.")
+        error.status = 400
+        throw error
     }
     else {
         try {
@@ -32,7 +34,9 @@ function postChoreDAO (title, categoryId, desc, urgencyStatus, urgencyDate) {
             if (urgencyStatus === "true") {
                 let today = new Date()
                 if (Date.parse(urgencyDate) < today) {
-                    return "Invalid urgency date input."
+                    let err = new Error("Invalid input: Choose an upcoming date.")
+                    err.status = 400
+                    throw err
             }}
             newChore.date = String(new Date().toISOString())
             newChore.completionStatus = false
@@ -45,8 +49,7 @@ function postChoreDAO (title, categoryId, desc, urgencyStatus, urgencyDate) {
             
 
         } catch (error) {
-            console.log(error)
-            return "Error occured."
+            throw error
         }
 
         
