@@ -5,7 +5,7 @@ async function updateABL(req, res) {
     if (!data.id) {
         res.status(400).send("Invalid input, choose an existing Chore.")
     }
-    if (data.urgencyStatus !== "true" && data.urgencyStatus !== "false") {
+    if (data.urgencyStatus && !["true", "false"].includes(data.urgencyStatus)) {
         res.status(400).send("Invalid urgency status input.")
     }
     else {
@@ -14,7 +14,8 @@ async function updateABL(req, res) {
             res.status(200).send(updatedData)
         }
         catch (error) {
-            res.status(400).send("An error occured.")
+
+            res.status(400).send(error.code)
         }
     }
 

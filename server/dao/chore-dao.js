@@ -56,7 +56,7 @@ function postChoreDAO (title, categoryId, desc, urgencyStatus, urgencyDate) {
 
 function updateChoreDAO(data) {
     try {
-        const filePath = path.join(thisPath, `${data.id}.json`)
+        const filePath = path.join(thisPath, `${Number(data.id)}.json`)
         const choreData = JSON.parse(fs.readFileSync(filePath, "utf8"))
         data.title ? choreData.title = String(data.title) : choreData.title = choreData.title
         data.desc ? choreData.desc = String(data.desc) : choreData.desc = choreData.desc
@@ -83,7 +83,9 @@ function updateChoreDAO(data) {
         fs.writeFileSync(filePath, JSON.stringify(choreData), "utf8")
         return "Successfully updated Chore."
     } catch(error) {
-        throw error
+        if (error.code === "ENOENT") {
+            return "Error: Non-existant Chore."
+        }
     }
 }
 
