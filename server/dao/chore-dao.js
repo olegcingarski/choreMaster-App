@@ -55,23 +55,39 @@ function postChoreDAO (title, categoryId, desc, urgencyStatus, urgencyDate) {
 }
 
 function updateChoreDAO(data) {
-    try {
-        const filePath = path.join(thisPath, `${Number(data.id)}.json`)
-        const choreData = JSON.parse(fs.readFileSync(filePath, "utf8"))
+    const filePath = path.join(thisPath, `${Number(data.id)}.json`)
+        let choreData;
+        try {
+            choreData = JSON.parse(fs.readFileSync(filePath, "utf8"))
+        } catch (error) {
+            if (error.code === "ENOENT") {
+                const err = new Error("Error: Non-existant Chore.")
+                throw err
+            }
+            throw error
+        }
+
         data.title ? choreData.title = String(data.title) : choreData.title = choreData.title
         data.desc ? choreData.desc = String(data.desc) : choreData.desc = choreData.desc
+
         if (data.urgencyStatus && (data.urgencyStatus !== choreData.urgencyStatus)) {
             if (data.urgencyStatus === "true") {
                 if (!data.urgencyDate) {
-                    return "Urgency status must contain a valid urgency date." 
+                    let err = new Error("Urgency status must contain a valid urgency date.")
+                    err.status = 400
+                    throw err
                 }
                 else {
                     let today = new Date()
+                    today.setHours(0, 0, 0, 0)
                     let parsed = Date.parse(data.urgencyDate)
                     if (parsed < today) {
-                        return "Can not go back in time :)."
+                        let err = new Error("Cannot assign a date in the past.")
+                        err.status = 400
+                        throw err
                     }
                     else {
+                        choreData.urgencyStatus = "true"
                         choreData.urgencyDate = data.urgencyDate
                     }
                 }
@@ -82,11 +98,6 @@ function updateChoreDAO(data) {
         }
         fs.writeFileSync(filePath, JSON.stringify(choreData), "utf8")
         return "Successfully updated Chore."
-    } catch(error) {
-        if (error.code === "ENOENT") {
-            return "Error: Non-existant Chore."
-        }
-    }
 }
 
 function deleteChoreDAO(id) {

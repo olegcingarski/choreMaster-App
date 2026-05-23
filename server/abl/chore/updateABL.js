@@ -1,23 +1,41 @@
+const AJV = require('ajv')
+const ajvFormats = require('ajv-formats')
+const ajv = new AJV()
+ajvFormats(ajv)
 const choreDAO = require("../../dao/chore-dao")
 
+const updateChoreSchema = {
+    type: "object",
+    properties: {
+        id : {type : "string"},
+        title : {type : "string"},
+        desc : {type : "string"},
+        categoryId : {type: "string"},
+        urgencyStatus : {type : "string"},
+        urgencyDate : {type : "string", format : "date"}
+    },
+    required:["id"],
+
+    if : {properties : {urgencyStatus : {const : "true"}},
+        required : ["urgencyStatus"]},
+    then : {required : ["urgencyDate"]},
+    additionalProperties: false
+    
+}
+const validation = ajv.compile(updateChoreSchema)
+
 async function updateABL(req, res) {
-    const data = req.query
-    if (!data.id) {
-        res.status(400).send("Invalid input, choose an existing Chore.")
+    let data = req.query
+    if (!validation(data)) {
+        res.status(400).json({error:"Invalid input", details:validation.errors})
     }
-    if (data.urgencyStatus && !["true", "false"].includes(data.urgencyStatus)) {
-        res.status(400).send("Invalid urgency status input.")
-    }
-    else {
         try {
             const updatedData = choreDAO.updateChoreDAO(data);
-            res.status(200).send(updatedData)
+            return res.status(200).send(updatedData)
         }
         catch (error) {
-
-            res.status(400).send(error.code)
+            return res.status(400).send(error.code)
         }
-    }
 
 }
 
