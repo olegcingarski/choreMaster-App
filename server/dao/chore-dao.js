@@ -96,6 +96,7 @@ function updateChoreDAO(data) {
             }
             else {
                 choreData.urgencyStatus = "false"
+                choreData.urgencyDate = ""
             }
         }
         fs.writeFileSync(filePath, JSON.stringify(choreData), "utf8")
