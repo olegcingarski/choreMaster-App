@@ -123,16 +123,19 @@ function completeChoreDAO(id) {
     try {
         const filePath = path.join(thisPath, `${id}.json`)
         let data = JSON.parse(fs.readFileSync(filePath, "utf8"))
+        if (data.completionStatus === true) {
+            let err = new Error("This Chore has already been completed.")
+            err.status = 400
+            throw err
+        }
         data.completionStatus = true
         fs.writeFileSync(filePath, JSON.stringify(data), "utf8")
-        return data
+        return "Chore has been successfully completed."
     } catch (error) {
         if (error.code === "ENOENT") {
             return "This Chore does not exist."
         }
-
-    }
-    
+    }  
 }
 
 function listChoreDAO(...params) {
@@ -144,7 +147,6 @@ function listChoreDAO(...params) {
             
         }
     if (typeof params[0] === "string") {
-        console.log("Goes here")
         if (categoryIdFinder(Number(params[0])) === false) {
             let err = new Error("Category does not exist.")
             err.status = 400
