@@ -1,12 +1,24 @@
+const AJV = require('ajv')
+const ajv = new AJV()
 const choreDAO = require('../../dao/chore-dao')
 
+const listSchema = {
+    type: "object",  
+    properties : {
+        categoryId : {type : "string"}
+    },
+    additionalProperties: false
+}
+
+const validation = ajv.compile(listSchema)
 
 async function listABL(req,res) {
-    let id = Number(req.query.categoryId)
-    if (!id) {
-        res.status(400).send("Invalid input, choose a Category to flter through.")
+    let id = req.query.categoryId
+    if (id) {
+        let data = choreDAO.listChoreDAO(id)
+        res.send(data)
     }
-    let data = choreDAO.listChoreDAO(id)
+    let data = choreDAO.listChoreDAO()
     res.send(data)
 }
 

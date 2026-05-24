@@ -26,8 +26,8 @@ function postChoreDAO (title, categoryId, desc, urgencyStatus, urgencyDate) {
     else {
         try {
             let list = indexingID(thisPath)
-            newChore.id = list[list.length-1] + 1
-            newChore.categoryId = categoryId 
+            newChore.id = String(list[list.length-1] + 1)
+            newChore.categoryId = String(categoryId)
             newChore.title = title
             desc ? newChore.desc = desc : newChore.desc = ""
             urgencyStatus ?  newChore.urgencyDate = urgencyStatus : newChore.urgencyStatus = "false"
@@ -113,7 +113,7 @@ function deleteChoreDAO(id) {
             return "Error: Chore does not exist."
         }
         else {
-            return "Server error."
+            throw error
         }
     }
 
@@ -135,24 +135,49 @@ function completeChoreDAO(id) {
     
 }
 
-function listChoreDAO(categoryId) {
-    if (categoryIdFinder(categoryId) === false) {
-        return "Error: Category does not exist."
-    }
+function listChoreDAO(...params) {
     let list = fs.readdirSync(thisPath)
     if (list.length === 0) {
-        return "No Chores found."
+        let err = new Error("Chore list empty.")
+        err.status = 400
+        throw err
+            
+        }
+    if (typeof params[0] === "string") {
+        console.log("Goes here")
+        if (categoryIdFinder(Number(params[0])) === false) {
+            let err = new Error("Category does not exist.")
+            err.status = 400
+            throw err
+        }
+        let array = []
+        list.map((item) => {
+            let jsonItem = JSON.parse(fs.readFileSync(`${thisPath}/${item}`, "utf8"))
+            if (jsonItem.completionStatus === false && jsonItem.categoryId === params[0]) {
+                array.push(jsonItem)
+
+            }
+        });
+        if (array.length < 1) {
+            let err = new Error("No active Chores in this Category.")
+            err.status = 400
+            throw err
+        }
+        return array
     }
+    
     let array = []
     list.map((item) => {
         let jsonItem = JSON.parse(fs.readFileSync(`${thisPath}/${item}`, "utf8"))
-        if (jsonItem.completionStatus === false && jsonItem.categoryId === categoryId) {
+        if (jsonItem.completionStatus === false) {
             array.push(jsonItem)
 
         }
     });
     if (array.length < 1) {
-        return "No active Chores in this Category."
+        let err = new Error("No active Chores.")
+        err.status = 400
+        throw err
     }
     return array
 }
