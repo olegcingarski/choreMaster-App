@@ -17,12 +17,12 @@ async function listABL(req,res) {
     if (!validation(data)) {
         res.status(400).json({error: "Invalid input."})
     }
-    if (data.id) {
-        let data = choreDAO.listChoreDAO(id)
-        res.send(data)
+    if (data.categoryId) {
+        let list = choreDAO.listChoreDAO(data.categoryId)
+        return res.send(list)
     }
     let finalData = choreDAO.listChoreDAO()
-    res.send(finalData)
+    return res.send(finalData)
 }
 
 module.exports = listABL
