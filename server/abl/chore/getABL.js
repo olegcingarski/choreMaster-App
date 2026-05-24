@@ -6,6 +6,5 @@ async function getABL (req, res) {
     }
     res.send(choreDAO.getChoreDAO(req.query.id))
 }
-// TODO!!!
 
 module.exports = getABL

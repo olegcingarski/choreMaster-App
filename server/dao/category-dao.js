@@ -24,6 +24,11 @@ function listCategoryDAO() {
             let itemPath = path.join(thisPath, item)
             list.push(JSON.parse(fs.readFileSync(itemPath, "utf8")))
         })
+        if (list.length < 1) {
+            let err = new Error("No categories found.")
+            err.status = 400
+            throw err
+        }
         return list
     }catch(error) {
         return "File System error."
@@ -56,7 +61,9 @@ function updateCategoryDAO(id, name) {
         fs.writeFileSync(filePath, JSON.stringify(data), "utf8")
         return data
     }catch (error) {
-        throw error
+        if (error.code === "ENOENT") {
+            throw "Category does not exist."
+        }
     }
 }
 
@@ -66,7 +73,9 @@ function deleteCategoryDAO(id) {
         fs.unlinkSync(filePath)
         return true
     }catch (error) {
-        throw error.message
+        if (error.code === "ENOENT") {
+            throw "Category does not exist."
+        }
     }
     
 }
