@@ -7,16 +7,23 @@ const choreDAO = require("../../dao/chore-dao")
 const postChoreSchema = {
     type: "object",
     properties: {
-        title : {type : "string"},
-        desc : {type : "string", default: ""},
-        categoryId : {type: "string"},
-        urgencyStatus : {type : "string", default: "false"},
-        urgencyDate : {type : "string", format : "date"}
+        title: { type: "string" },
+        desc: { type: "string", default: "" },
+        categoryId: { type: "string" },
+        urgencyStatus: { type: "string", default: "false" },
+        urgencyDate: { type: "string", format: "date" }
     },
-    required:["title", "categoryId"],
-    additionalProperties: false
+    required: ["title", "categoryId"],
+    if: {
+        properties: { urgencyStatus: { const: "true" } },
+        required: ["urgencyStatus"] 
+    },
+    then: {
+        required: ["urgencyDate"]
+    },
     
-}
+    additionalProperties: false
+};
 
 const validation = ajv.compile(postChoreSchema)
 

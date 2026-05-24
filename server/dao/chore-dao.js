@@ -11,7 +11,9 @@ function getChoreDAO(id) {
 
     } catch(error) {
         if (error.code === "ENOENT") {
-            return "Chore not found."
+            let err = new Error("Chore not found.")
+            err.status = 400
+            throw err
         }
     }
 }
@@ -50,11 +52,8 @@ function postChoreDAO (title, categoryId, desc, urgencyStatus, urgencyDate) {
 
         } catch (error) {
             throw error
-        }
-
-        
+        } 
     }
-
 }
 
 function updateChoreDAO(data) {
@@ -110,7 +109,9 @@ function deleteChoreDAO(id) {
         return true
     } catch (error) {
         if (error.code === "ENOENT") {
-            return "Error: Chore does not exist."
+            let err = new Error("Chore does not exist.")
+            err.status = 400
+            throw err
         }
         else {
             throw error
@@ -133,7 +134,9 @@ function completeChoreDAO(id) {
         return "Chore has been successfully completed."
     } catch (error) {
         if (error.code === "ENOENT") {
-            return "This Chore does not exist."
+            let err = new Error("Chore does not exist.")
+            err.status = 400
+            throw err
         }
     }  
 }

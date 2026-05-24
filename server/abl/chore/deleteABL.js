@@ -6,7 +6,7 @@ async function deleteABL(req, res) {
     }
     else {
         try {
-            let deletedChore = choreDAO.deleteChoreDAO(req.query.id)
+            choreDAO.deleteChoreDAO(req.query.id)
             res.status(200).send("The Chore has been successfully deleted.")
         } catch (error) {
             throw error

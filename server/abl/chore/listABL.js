@@ -13,13 +13,16 @@ const listSchema = {
 const validation = ajv.compile(listSchema)
 
 async function listABL(req,res) {
-    let id = req.query.categoryId
-    if (id) {
+    let data = req.query
+    if (!validation(data)) {
+        res.status(400).json({error: "Invalid input."})
+    }
+    if (data.id) {
         let data = choreDAO.listChoreDAO(id)
         res.send(data)
     }
-    let data = choreDAO.listChoreDAO()
-    res.send(data)
+    let finalData = choreDAO.listChoreDAO()
+    res.send(finalData)
 }
 
 module.exports = listABL

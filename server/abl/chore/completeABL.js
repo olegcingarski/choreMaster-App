@@ -6,7 +6,7 @@ async function completeABL(req, res) {
         res.status(400).json({error : "Invalid input."})
     }
     try {
-        let markAsComplete = choreDAO.completeChoreDAO(id)
+        choreDAO.completeChoreDAO(id)
         res.send("Selected Chore is completed.")
     } catch (error) {
         throw error
