@@ -25,9 +25,7 @@ function listCategoryDAO() {
             list.push(JSON.parse(fs.readFileSync(itemPath, "utf8")))
         })
         if (list.length < 1) {
-            let err = new Error("No categories found.")
-            err.status = 400
-            throw err
+            return list
         }
         return list
     }catch(error) {
@@ -41,7 +39,8 @@ function postCategoryDAO(name) {
     try{
         let category = {}
         var ids = indexingID(thisPath)
-        category.id = ids[ids.length - 1] + 1
+        let nextId = ids.length === 0 ? 1 : Math.max(...ids) + 1;
+        category.id = String(nextId)
         category.name = name
         const filePath = path.join(thisPath, `${category.id}.json`)
         fs.writeFileSync(filePath, JSON.stringify(category), "utf8")
@@ -71,7 +70,7 @@ function deleteCategoryDAO(id) {
     try {
         const filePath = path.join(thisPath, `${id}.json`)
         fs.unlinkSync(filePath)
-        return true
+        return String(id)
     }catch (error) {
         if (error.code === "ENOENT") {
             throw "Category does not exist."
@@ -82,7 +81,8 @@ function deleteCategoryDAO(id) {
 
 function indexingID (path) {
     let list = fs.readdirSync(path)
-    list = list.map((item) => Number(item.slice(0,item.length-5)))
+     list = list.filter(item => item.endsWith('.json'))
+    list = list.map((item) => Number(item.slice(0, item.length - 5)))
     return list
 }
 

@@ -2,27 +2,31 @@ const AJV = require('ajv')
 const ajv = new AJV()
 const categoryDAO = require("../../dao/category-dao")
 
-const getCategorySchema = {
+const updateCategorySchema = {
     type : "object", 
     properties : {
-        id : { type : "string"}
+        id : { type : "string"},
+        name: { type : "string",
+                minLength : 1,
+        }
     },
-    required : ["id"],
+    required : ["id", "name"],
     additionalProperties : false
 }
 
-const validation = ajv.compile(getCategorySchema)
+const validation = ajv.compile(updateCategorySchema)
 
 async function updateCategoryABL(req, res) {
-    let data = req.query
+    let data = req.body
+    console.log(data)
     if (!validation(data)) {
-        res.status(400).send("Can not locate Category.")
+        return res.status(400).send("Can not locate Category.")
     }
     if (data.name === "" || !categoryDAO.nameChecking(data.name)) {
-        res.status(400).send("Can not duplicate categories.")
+        return res.status(400).send("Can not duplicate categories.")
     }
     let update = categoryDAO.updateCategoryDAO(data.id, data.name)
-    res.send("Successfully updated the Category.")
+    return res.send(update)
     
 }
 

@@ -14,7 +14,8 @@ const postCategorySchema = {
 const validation = ajv.compile(postCategorySchema)
 
 async function postABL(req, res) {
-    let data = req.query
+    let data = req.body
+    console.log(data)
     if (!validation(data) || data.name === "") {
         res.status(400).send("Name of category required.")
     }

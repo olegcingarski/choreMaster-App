@@ -15,12 +15,12 @@ const validation = ajv.compile(getCategorySchema)
 
 
 async function getABL(req, res) {
-    const id = req.query
+    const id = req.body
     if (!validation(id)){
-        res.status(400).json({error : "Invalid input"})
+        return res.status(400).json({error : "Invalid input"})
     }
     const data = categoryDAO.getCategoryDAO(id)
-    res.send(data)
+    return es.send(data)
 
 }
 

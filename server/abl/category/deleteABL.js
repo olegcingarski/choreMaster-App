@@ -14,14 +14,15 @@ const postCategorySchema = {
 const validation = ajv.compile(postCategorySchema)
 
 async function deleteCategoryABL(req, res) {
-    let data = req.query
+    let data = req.body
+    console.log(data)
     if (!validation(data)) {
-        res.status(400).send("Can not locate Category.")
+        return res.status(400).send("Can not locate Category.")
     }
     else {
         try {
-            categoryDAO.deleteCategoryDAO(data.id)
-            return "Category has been successfully deleted."
+            let deleted = categoryDAO.deleteCategoryDAO(data.id)
+            return res.status(200).json(deleted)
         } catch (e) {
             throw e
         }
