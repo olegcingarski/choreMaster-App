@@ -69,6 +69,15 @@ function updateCategoryDAO(id, name) {
 function deleteCategoryDAO(id) {
     try {
         const filePath = path.join(thisPath, `${id}.json`)
+        const choreFilePath = path.join(__dirname, "storage", "choreList")
+        const choreFolder = fs.readdirSync(choreFilePath).filter(file => file.endsWith('.json'));
+        for (let i = 0; i < choreFolder.length; i++) {
+            const currentChorePath = path.join(choreFilePath, choreFolder[i]);
+            const choreData = JSON.parse(fs.readFileSync(currentChorePath, "utf8"));
+            if (choreData.categoryId === String(id)) {
+                fs.unlinkSync(currentChorePath)
+            }
+        }
         fs.unlinkSync(filePath)
         return String(id)
     }catch (error) {

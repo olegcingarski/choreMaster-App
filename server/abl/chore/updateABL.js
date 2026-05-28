@@ -25,16 +25,16 @@ const updateChoreSchema = {
 const validation = ajv.compile(updateChoreSchema)
 
 async function updateABL(req, res) {
-    let data = req.query
+    let data = req.body
     if (!validation(data)) {
-        res.status(400).json({error:"Invalid input", details:validation.errors})
+        return res.status(400).json({error:"Invalid input", details:validation.errors})
     }
         try {
             const updatedData = choreDAO.updateChoreDAO(data);
-            return res.status(200).send(updatedData)
+            return res.status(200).json(updatedData)
         }
         catch (error) {
-            return res.status(400).send(error.code)
+            return res.status(400).send(error)
         }
 
 }

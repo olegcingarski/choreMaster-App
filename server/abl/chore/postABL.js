@@ -28,14 +28,14 @@ const postChoreSchema = {
 const validation = ajv.compile(postChoreSchema)
 
 async function postABL(req, res) {
-    if (!validation(req.query) || req.query === "") {
+    if (!validation(req.body) || req.body === "") {
         res.status(400).json({error:validation.errors})
     }
-    if (req.query.urgencyStatus === "true" && (!req.query.urgencyDate || req.query.urgencyDate === "")) {
+    if (req.body.urgencyStatus === "true" && (!req.body.urgencyDate || req.body.urgencyDate === "")) {
         res.status(400).send("Missing input in urgency fields.")
     }
     else {
-         let data = choreDAO.postChoreDAO(req.query.title, Number(req.query.categoryId), req.query.desc, req.query.urgencyStatus, req.query.urgencyDate)
+         let data = choreDAO.postChoreDAO(req.body.title, Number(req.body.categoryId), req.body.desc, req.body.urgencyStatus, req.body.urgencyDate)
         res.status(200).send(data)
     }
 }

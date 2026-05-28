@@ -20,7 +20,7 @@ function getChoreDAO(id) {
 
 function postChoreDAO (title, categoryId, desc, urgencyStatus, urgencyDate) {
     let newChore = {}
-    if (!categoryIdFinder(categoryId)) {
+    if (!categoryIdFinder(String(categoryId))) {
         let error = new Error("Category does not exist.")
         error.status = 400
         throw error
@@ -100,7 +100,7 @@ function updateChoreDAO(data) {
             }
         }
         fs.writeFileSync(filePath, JSON.stringify(choreData), "utf8")
-        return "Successfully updated Chore."
+        return choreData
 }
 
 function deleteChoreDAO(id) {
@@ -118,7 +118,6 @@ function deleteChoreDAO(id) {
             throw error
         }
     }
-
 }
 
 function completeChoreDAO(id) {
@@ -144,12 +143,7 @@ function completeChoreDAO(id) {
 
 function listChoreDAO(...params) {
     let list = fs.readdirSync(thisPath)
-    if (list.length === 0) {
-        let err = new Error("Chore list empty.")
-        err.status = 400
-        throw err
-            
-        }
+    if (list.length === 0) return []
     if (typeof params[0] === "string") {
         if (categoryIdFinder(Number(params[0])) === false) {
             let err = new Error("Category does not exist.")
@@ -164,11 +158,6 @@ function listChoreDAO(...params) {
 
             }
         });
-        if (array.length < 1) {
-            let err = new Error("No active Chores in this Category.")
-            err.status = 400
-            throw err
-        }
         return array
     }
     

@@ -1,15 +1,15 @@
 const choreDAO = require("../../dao/chore-dao")
 
 async function deleteABL(req, res) {
-    if (!req.query.id) {
-        res.status(400).send("Invalid input, can not locate Chore.")
+    if (!req.body.id) {
+        return res.status(400).json({error:"Invalid input, can not locate Chore."})
     }
     else {
         try {
-            choreDAO.deleteChoreDAO(req.query.id)
-            res.status(200).send("The Chore has been successfully deleted.")
+            choreDAO.deleteChoreDAO(req.body.id)
+            return res.status(200).json({message:"The Chore has been successfully deleted."})
         } catch (error) {
-            throw error
+            return res.status(error.status || 500).json({ error: error.message })
         }
     }
 }
